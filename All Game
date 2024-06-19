@@ -1,3 +1,49 @@
+function isnil(thing)
+		return (thing == nil)
+	end
+	local function round(n)
+		return math.floor(tonumber(n) + 0.5)
+	end
+	Number = math.random(1, 1000000)
+	function UpdateEspPlayer()
+		for i,v in pairs(game:GetService'Players':GetChildren()) do
+			pcall(function()
+				if not isnil(v.Character) then
+					if ESPPlayer then
+						if not isnil(v.Character.Head) and not v.Character.Head:FindFirstChild('NameEsp'..Number) then
+							local bill = Instance.new('BillboardGui',v.Character.Head)
+							bill.Name = 'NameEsp'..Number
+							bill.ExtentsOffset = Vector3.new(0, 1, 0)
+							bill.Size = UDim2.new(1,200,1,30)
+							bill.Adornee = v.Character.Head
+							bill.AlwaysOnTop = true
+							local name = Instance.new('TextLabel',bill)
+							name.Font = "GothamBold"
+							name.FontSize = "Size14"
+							name.TextWrapped = true
+							name.Text = (v.Name ..' \n'.. round((game:GetService('Players').LocalPlayer.Character.Head.Position - v.Character.Head.Position).Magnitude/3) ..' M')
+							name.Size = UDim2.new(1,0,1,0)
+							name.TextYAlignment = 'Top'
+							name.BackgroundTransparency = 1
+							name.TextStrokeTransparency = 0.5
+							if v.Team == game.Players.LocalPlayer.Team then
+								name.TextColor3 = Color3.new(0,255,0)
+							else
+								name.TextColor3 = Color3.new(255,0,0)
+							end
+						else
+							v.Character.Head['NameEsp'..Number].TextLabel.Text = (v.Name ..' | '.. round((game:GetService('Players').LocalPlayer.Character.Head.Position - v.Character.Head.Position).Magnitude/3) ..' M\nHealth : ' .. round(v.Character.Humanoid.Health*100/v.Character.Humanoid.MaxHealth) .. '%')
+						end
+					else
+						if v.Character.Head:FindFirstChild('NameEsp'..Number) then
+							v.Character.Head:FindFirstChild('NameEsp'..Number):Destroy()
+						end
+					end
+				end
+			end)
+		end
+	end
+
 local normal = loadstring(game:HttpGet(('https://raw.githubusercontent.com/LaHPhtzX/W/main/Q')))()
 
 _G.Color = Color3.fromRGB(139, 0, 0)
@@ -5,7 +51,7 @@ _G.Logo = 17682827124
 local Win = library:Evil("LaPhtZz","    Hub",_G.Logo)
 
 local farm = Win:CraftTab('Chính')
-local Page = farm:CraftPage('Chính',1)
+local Page = farm:CraftPage('Thường',1)
 
 Page:Button('Noclip',function(Value) --Name
     local runservice = game:GetService("RunService")
@@ -19,7 +65,7 @@ Page:Button('Noclip',function(Value) --Name
     end)
 end,true)
 
-Page:Slider("Slider",true,16,1000,50,function(Value)
+Page:Slider("Tốc độ Chạy",true,16,1000,50,function(Value)
     game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid").WalkSpeed = Value
     
 end)
@@ -31,4 +77,31 @@ Page:Button('Bay',function() --Name
       game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
     end
   end)
-end,true)
+end,true)  
+
+local Page = farm:CraftPage('Chức Năng Khác',2)
+
+Page:Toggle('Tìm Nguời Chơi',nil,function(Value)
+    ESPPlayer = Value
+        while ESPPlayer do wait()
+            UpdateEspPlayer()
+        end
+end)
+
+Page:Button('Item Dịch Chuyển',function() 
+    local plr = game:GetService("Players").LocalPlayer
+local mouse = plr:GetMouse()
+local tool = Instance.new("Tool")
+tool.RequiresHandle = false
+tool.Name = "Teleport Tool"
+tool.Activated:Connect(function()
+local root = plr.Character.HumanoidRootPart
+local pos = mouse.Hit.Position+Vector3.new(0,2.5,0)
+local offset = pos-root.Position
+root.CFrame = root.CFrame+offset
+end)
+tool.Parent = plr.Backpack
+end)
+
+Page:Button('Tàng Hình',function() game:GetService("Players").LocalPlayer.Character.LowerTorso:Destroy()
+    end)
